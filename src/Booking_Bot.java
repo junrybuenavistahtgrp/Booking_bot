@@ -62,7 +62,7 @@ public class Booking_Bot extends Thread{
 	public void run() {
 		String curDate ="";		
 		System.out.println(curDate);
-		
+		setDataBaseConnection();
 		while(true) {
 			try {
 				Thread.sleep(2000);
@@ -71,12 +71,19 @@ public class Booking_Bot extends Thread{
 			
 			if(!curDate.equalsIgnoreCase(dateformat.format(new Date()))) {
 				setBrowser();
-			    String queryMe = "INSERT INTO Booking (Date, B_Ocean_Price, Sea_Club_Price, Bahia_Mar_Price, Premiere_Price) VALUES (value1, value2, value3,)";
 				curDate = dateformat.format(new Date());
+			    String queryMe = "INSERT INTO Booking (Date, B_Ocean_Price, Sea_Club_Price, Bahia_Mar_Price, Premiere_Price) VALUES ('"+curDate+"'";
+				
 				for(int i=0;i<Hotels.length;i++) {
 					System.out.print("Proccessing "+Hotels[i]);
+					try {
+						Thread.sleep(5000);
+					}catch(Exception ee) {ee.printStackTrace();}
 					driver.get("https://www.booking.com/");
 					driver.findElement(By.id("ss")).clear();
+					try {
+						Thread.sleep(3000);
+					}catch(Exception ee) {ee.printStackTrace();}
 					driver.findElement(By.id("ss")).sendKeys(Hotels[i]);
 					
 					
@@ -129,18 +136,23 @@ public class Booking_Bot extends Thread{
 													} 
 												}
 						}
+					
 						
-						
-						
+						queryMe+=", '"+value+"'";
 						System.out.println(" - "+ value);
 						
-						try {
-							Thread.sleep(4000);
-						}catch(Exception ee) {ee.printStackTrace();}
+						
 					}
-					
-					
-					
+				    queryMe+=")";
+				    System.out.println(queryMe);
+				    try {
+				    	st.execute(queryMe);
+				    }catch(Exception ee) {ee.printStackTrace();}
+				    
+				    try {
+						Thread.sleep(4000);
+					}catch(Exception ee) {ee.printStackTrace();}
+				    driver.quit();
 				}
 			}
 	}
